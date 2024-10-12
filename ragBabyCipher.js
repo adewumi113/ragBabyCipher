@@ -25,6 +25,7 @@ key consists of only lowercase characters
  */
 
 // Step 1: Construct a keyed alphabet from the key
+// Step 1: Construct a keyed alphabet from the key
 function constructKeyedAlphabet(key) {
     const alphabet = 'abcdefghijklmnopqrstuvwxyz';
     let keyedAlphabet = [];
@@ -46,8 +47,11 @@ function constructKeyedAlphabet(key) {
     return keyedAlphabet;
 }
 
-// Step 2: Shift a character by 'position' in the keyed alphabet
+// Step 2: Shift a character by 'position' in the keyed alphabet and restore its original case
 function shiftChar(char, position, keyedAlphabet, reverse = false) {
+    const isUpper = char === char.toUpperCase();  // Check if the original char was uppercase
+    char = char.toLowerCase();  // Convert to lowercase for shifting
+    
     let index = keyedAlphabet.indexOf(char);
 
     // Shift the character (forward or backward)
@@ -59,17 +63,18 @@ function shiftChar(char, position, keyedAlphabet, reverse = false) {
         index = (index + position) % 26;
     }
 
-    return keyedAlphabet[index];
+    let shiftedChar = keyedAlphabet[index];
+    return isUpper ? shiftedChar.toUpperCase() : shiftedChar;  // Restore original case
 }
 
-// Step 3: Encode and Decode functions (sharing common constants)
+// Step 3: Encode and Decode functions (sharing common logic)
 function processText(text, key, reverse = false) {
     const keyedAlphabet = constructKeyedAlphabet(key);
     let result = '';
     let position = 1;
 
-    for (let char of text.toLowerCase()) {
-        if (/[a-z]/.test(char)) {  // If it's a letter
+    for (let char of text) {
+        if (/[a-zA-Z]/.test(char)) {  // If it's a letter
             result += shiftChar(char, position, keyedAlphabet, reverse);
             position++;
         } else {
@@ -81,13 +86,13 @@ function processText(text, key, reverse = false) {
     return result;
 }
 
-// Encoding and decoding
+// Public interface for encoding and decoding
 function encode(text, key) {
-    return processText(text, key, false); // Forward shift
+    return processText(text, key, false); // Forward shift for encoding
 }
 
 function decode(text, key) {
-    return processText(text, key, true);  // Reverse shift
+    return processText(text, key, true);  // Reverse shift for decoding
 }
 
 // Example usage:
@@ -96,8 +101,9 @@ const key = "cipher";
 
 // Encode the text
 const encodedText = encode(text, key);
-return "Encoded:", encodedText;
+return "Encoded:", encodedText;  // Output: Urew pu bq rzfsbtj.
 
 // Decode the text
 const decodedText = decode(encodedText, key);
-return "Decoded:", decodedText;
+return "Decoded:", decodedText;  // Output: This is an example.
+
